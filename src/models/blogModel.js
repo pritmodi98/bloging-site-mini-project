@@ -1,7 +1,9 @@
-const mongoose = require('mongoose');
-const ObjectId = mongoose.schema.type.ObjectId
 
-const blogSchema = new mongoose.schema({
+const mongoose = require('mongoose');
+
+const ObjectId = mongoose.Schema.Types.ObjectId
+
+const blogSchema = new mongoose.Schema({
 
     title: {
         type: String,
@@ -29,14 +31,14 @@ const blogSchema = new mongoose.schema({
         type: Boolean,
         default: false
     },
-    deletedAt: {
-        type: Date,
-        default: Date.now()
-    },
-    publishedAt: {
-        type: Date,
-        default: Date.now()
-    }
+    // deletedAt: {
+    //     type: Date,
+    //     default: Date.now()
+    // },
+    // publishedAt: {
+    //     type: Date,
+    //     default: Date.now()
+    
 
 
 }, { timestamps: true });
