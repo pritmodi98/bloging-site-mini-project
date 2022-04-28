@@ -94,6 +94,45 @@ const deleteBlog=async function(req,res){
     
 }
 
+const updateBlog=async function (req,res) {
+    try {
+        const getId=req.params.blogId
+        const blogData=req.body
+        const blogCheck=await blogModel.findById(getId)                   //findbyid to verify blog exist or not
+        if (blogCheck.isdeleted===false) {
+            if(blogData.ispublished===true){
+                blogData.publishedAt=new Date()
+                console.log(blogData)
+            }
+            const updatedData=await blogModel.findOneAndUpdate({_id:getId},blogData,{new:true})
+            return res.status(200).send({status:true,data:updatedData})
+            }
+        else{
+            return res.status(401).send({status:false,msg:"blogs not found"})
+           }
+
+    } catch (error) {
+            return res.status(500).send({status:false,error:error.message})
+        }
+    
+}
+
+const blogDeleteOptions=async function (req,res) {
+    try {
+        const data=req.query
+        data.ispublished=false
+        const blogs=await blogModel.updateMany(data,{isdeleted:true})
+        if (blogs.matchedCount==0) {
+            return res.status(404).send({status:false,data:'blogs not found'})
+        }
+        return res.status(200).send({status:true,msg:`${blogs.matchedCount} blogs deleted`})
+    } catch (error) {
+        return res.status(500).send({error:error.message})
+    }
+}
+
 module.exports.createBlog = createBlog
 module.exports.getBlog=getBlog;
 module.exports.deleteBlog=deleteBlog;
+module.exports.updateBlog=updateBlog;
+module.exports.blogDeleteOptions=blogDeleteOptions;
