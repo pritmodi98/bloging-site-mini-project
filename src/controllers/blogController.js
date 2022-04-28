@@ -77,15 +77,14 @@ const deleteBlog=async function(req,res){
             return res.status(400).send({status:false,msg:"blogid is not valid"})
         }
 
-        const id=ObjectId(blogId)
         
-        let blog=await blogModel.findOne({_id:id,isDeleted:false})
+        let blog=await blogModel.findOne({_id:blogId,isDeleted:false})
         if(!blog)
         {
             return res.status(404).send({status:false,msg:"blog does not exist"})
         
         }
-        await blogModel.findOneAndUpdate({_id:id},{$set:{isDeleted:true,deletedAt:new Date()}})
+        await blogModel.findOneAndUpdate({_id:blogId},{$set:{isDeleted:true,deletedAt:new Date()}})
         return res.status(200).send({status:true,msg:"blog deleted successfully"})
     }
     catch(err){
@@ -98,10 +97,16 @@ const updateBlog=async function (req,res) {
     try {
         const getId=req.params.blogId
         const blogData=req.body
+
+        let isValidId=ObjectId.isValid(blogId)
+        if(!isValidId){
+            return res.status(400).send({status:false,msg:"blogid is not valid"})
+        }
+
         const checkId=await blogModel.findById(getId)
         // const blogObject={}                                  //id exists or not
         if (!checkId) {
-            return res.status(400).send({status:false,msg:'Invalid blogId'})
+            return res.status(400).send({status:false,msg:'blog does not exist'})
         }
         if (checkId.isDeleted===false) {
             if (blogData.isPublished===true && checkId.isPublished===false) {
