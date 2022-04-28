@@ -136,17 +136,18 @@ const updateBlog=async function (req,res) {
 }
 
 const blogDeleteOptions=async function (req,res) {
-    try {
-        const data=req.query
-        data.ispublished=false
-        const blogs=await blogModel.updateMany(data,{isdeleted:true})
-        if (blogs.matchedCount==0) {
-            return res.status(404).send({status:false,data:'blogs not found'})
-        }
-        return res.status(200).send({status:true,msg:`${blogs.matchedCount} blogs deleted`})
-    } catch (error) {
-        return res.status(500).send({error:error.message})
-    }
+    const {...data}=req.query
+    // try {
+    //     const {...data} =req.query
+    //     data.ispublished=false
+    //     const blogs=await blogModel.updateMany(data,{isdeleted:true})
+    //     if (blogs.matchedCount==0) {
+    //         return res.status(404).send({status:false,data:'blogs not found'})
+    //     }
+    //     return res.status(200).send({status:true,msg:`${blogs.matchedCount} blogs deleted`})
+    // } catch (error) {
+    //     return res.status(500).send({error:error.message})
+    // }
 }
 
 module.exports.createBlog = createBlog
