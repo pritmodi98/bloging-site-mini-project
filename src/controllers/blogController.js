@@ -98,22 +98,40 @@ const updateBlog=async function (req,res) {
     try {
         const getId=req.params.blogId
         const blogData=req.body
-        const blogCheck=await blogModel.findById(getId)                   //findbyid to verify blog exist or not
-        if (blogCheck.isdeleted===false) {
-            if(blogData.ispublished===true){
-                blogData.publishedAt=new Date()
-                console.log(blogData)
-            }
-            const updatedData=await blogModel.findOneAndUpdate({_id:getId},blogData,{new:true})
-            return res.status(200).send({status:true,data:updatedData})
-            }
-        else{
-            return res.status(401).send({status:false,msg:"blogs not found"})
-           }
-
-    } catch (error) {
-            return res.status(500).send({status:false,error:error.message})
+        const checkId=await blogModel.findById(getId)
+        // const blogObject={}                                  //id exists or not
+        if (!checkId) {
+            return res.status(400).send({status:false,msg:'Invalid blogId'})
         }
+        if (checkId.isDeleted===false) {
+            if (blogData.isPublished===true && checkId.isPublished===false) {
+               await blogModel.findOneAndUpdate({_id:getId},{$set:{isPublished:true,publishedAt:Date.now()}})
+                // console.log(blogData)
+            }
+            if (blogData.title) {
+                await blogModel.findOneAndUpdate({_id:getId},{$set:{title:blogData.title}})
+            }
+            if (blogData.category) {
+                await blogModel.findOneAndUpdate({_id:getId},{$set:{category:blogData.category}})
+            }
+            if (blogData.body) {
+                await blogModel.findOneAndUpdate({_id:getId},{$set:{body:blogData.body}})
+            }
+            if (blogData.tags) {
+                await blogModel.findOneAndUpdate({_id:getId},{$addToSet:{tags:blogData.tags}})
+            }
+            if (blogData.subCategory) {
+                await blogModel.findOneAndUpdate({_id:getId},{$addToSet:{subCategory:blogData.subCategory}})
+            }
+            const updatedData= await blogModel.findById(getId)
+            return res.status(200).send({status:true,data:updatedData})
+        }
+        else{
+            return res.status(404).send({status:false,msg:"blogs not found"})
+        }
+    } catch (error) {
+        return res.status(500).send({status:false,error:error.message})
+    }
     
 }
 
