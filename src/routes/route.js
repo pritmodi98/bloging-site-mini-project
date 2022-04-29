@@ -1,29 +1,25 @@
-const { application } = require('express');
- const express = require('express');
-
+const express = require('express');
 const router = express.Router();
+const authorController = require('../controllers/authorController')
+const blogController = require('../controllers/blogController')
+const middleware = require('../middleware/middleware')
 
 
-const authorController= require("../controllers/authorController")
+router.post('/authors', authorController.createAuthor);
 
-// const publisherController = require('../controllers/publisherController');
+router.post('/login', authorController.loginAuthor);
 
-router.get("/test-me", function (req, res) {
-    res.send("My first ever api!")
-})
+router.post('/blogs', blogController.createBlog);
 
-//router.post("/createPublisher",publisherController.createPublisher)
+router.get('/filterblogs', blogController.getBlog);
 
- router.post("/Authors",authorController.createAuthors)
+ router.put('/blogs/:blogId', blogController.deleteBlog);
 
-// app.post('/user/All',function (req,res){
-//     authorController.createAuthors});
+router.delete('/blogs/:blogId', blogController.updateBlog);
+
+router.delete('/blogs',  blogController.blogDeleteOptions);
 
 
-// router.post("/createBook",bookController.createBook)
-
-// router.get("/getpublisherauthordetails",bookController.getPublisherAuthorDetails)
-// router.put("/updatebooks",bookController.updateBooks)
-// router.put("/updatebookprice",bookController.updateBookPrice)
 
 module.exports = router;
+
