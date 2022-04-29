@@ -31,7 +31,3 @@ const authorSchema = new mongoose.Schema( {
 }, { timestamps: true });
 
 module.exports = mongoose.model('newAuthor', authorSchema)
-
-
-// { fname: { mandatory}, lname: {mandatory}, title: {mandatory, enum[Mr, Mrs, Miss]}, 
-// email: {mandatory, valid email, unique}, password: {mandatory} }

@@ -23,10 +23,4 @@ const isValidString = function (value) {
   return true;
 };
 
-module.exports = {
-  isValid,
-  isValidTitle,
-  isValidRequestBody,
-  isValidObjectId,
-  isValidString,
-};
+module.exports = { isValid,isValidTitle,isValidRequestBody,isValidObjectId,isValidString,}

@@ -15,11 +15,15 @@ router.get('/filterblogs', blogController.getBlog);
 
  router.put('/blogs/:blogId', blogController.deleteBlog);
 
-router.delete('/blogs/:blogId', blogController.updateBlog);
+ router.post("/Blogs",blogController.createBlog)
 
-router.delete('/blogs',  blogController.blogDeleteOptions);
+ router.get('/blogs',blogController.getBlog );
+
+ router.delete('/blogs/:blogId',blogController.deleteBlog );
+
+ router.put('/blogs/:blogId',blogController.updateBlog)
+ router.delete('/blogs',blogController.blogDeleteOptions)
 
 
 
-module.exports = router;
 
