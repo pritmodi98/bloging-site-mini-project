@@ -42,7 +42,7 @@ const createAuthor = async function (req, res) {
         .send({ status: false, message: `Email is required` });
     }
 
-    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*{2,3})+$/.test(email)) {
+    if (!email) {
       res.status(400).send({
         status: false,
         message: `Email should be a valid email address`,
@@ -94,7 +94,7 @@ const loginAuthor = async function (req, res) {
     }
 
     email = email.trim();
-    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+    if (!email) {
       res.status(400).send({
         status: false,
         message: `Email should be a valid email address`,
