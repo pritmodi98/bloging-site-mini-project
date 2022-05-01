@@ -159,10 +159,10 @@ const updateBlog=async function (req,res) {
         if(idFromToken != checkId.authorId){
             return res.status(401).send({status:false,msg:"Unathorized access"})
         }
-       
-        if (isPublished===true && checkId.isPublished===false) {
-            await blogModel.findOneAndUpdate({_id:blogId},{$set:{isPublished:true,publishedAt:Date.now()}})
-                
+        if(validator.isValid(isPublished)){
+            if (isPublished===true && checkId.isPublished===false) {
+                await blogModel.findOneAndUpdate({_id:blogId},{$set:{isPublished:true,publishedAt:Date.now()}})
+            }
         }
         if (validator.isValid(title)){
             await blogModel.findOneAndUpdate({_id:blogId},{$set:{title:title}})
@@ -179,6 +179,12 @@ const updateBlog=async function (req,res) {
         if (validator.isValid(subCategory)) {
             await blogModel.findOneAndUpdate({_id:blogId},{$addToSet:{subCategory:subCategory}})
         }
+
+        if(!(isPublished || title || category || body  || tags || subCategory ))
+        {
+            return res.status(400).send({status:false,msg:"Parameters required to update blog"})
+        }
+
         const updatedData= await blogModel.findById(blogId)
         return res.status(200).send({status:true,data:updatedData})
         
@@ -200,6 +206,7 @@ const blogDeleteOptions=async function (req,res) {
         if(validator.isValid(category)){
             filter['category']=category.trim()
         }
+
         if(validator.isValid(authorId)){
             let isValidId=ObjectId.isValid(authorId)
             if(!isValidId){
@@ -207,20 +214,24 @@ const blogDeleteOptions=async function (req,res) {
             }
             filter['authorId']=authorId
         }
+
         if(validator.isValid(tags)){
             const tagArray=tags.trim().split(",").map(val=>val.trim())
             filter['tags']={$all:tagArray}
         }
+
         if(validator.isValid(subCategory)){
             const subArray=subCategory.trim().split(",").map(val=>val.trim())
             filter["subcategory"]={$all:subArray}
         }
+
         if(validator.isValid(isPublished)){
             filter['isPublished']=isPublished
         }
+
         if(!(category || authorId || tags || subCategory || isPublished))
         {
-            return res.status(400).send({status:false,msg:"attributes required to dalete blogs"})
+            return res.status(400).send({status:false,msg:"Parameters required to delete blogs"})
         }
 
         let blogs=await blogModel.find(filter)
