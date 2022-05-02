@@ -47,8 +47,13 @@ const createBlog = async function (req, res) {
         if (!auth) { return res.status(400).send({ msg: "authorId does not exist" }) }
 
         let blogCreated = await blogModel.create(blog)
+        
+       
+        if (blogCreated.isPublished===true) {
+            const updatedData=await blogModel.findOneAndUpdate({_id:blogCreated._id},{publishedAt:new Date()},{new:true})
+            return res.status(201).send({status:true,data:updatedData})
+        }
         return res.status(201).send({ status: true, data: blogCreated })
-
 
     }
     catch (err) {
@@ -89,6 +94,7 @@ const getBlog=async function(req,res){
         if(validator.isValid(tags)){
             const tagArray=tags.trim().split(",").map(val=>val.trim())
             filteredData["tags"]={$all:tagArray}
+            
         }
         
         let BlogDetails=await blogModel.find(filteredData)
