@@ -30,13 +30,6 @@ const authentication = async function (req, res, next) {
 
 const authorization=async function (req, res, next) {
   try {
-    // let blog = req.body
-  //   if (!validator.isValidRequestBody(blog)) {
-  //     return res.status(400).send({
-  //       status: false,
-  //       message: "Invalid request parameter, please provide the appropriate Detaills",
-  //     });
-  // }
     let authorId=req.body.authorId;
 
     if(!authorId){
@@ -59,7 +52,21 @@ const authorization=async function (req, res, next) {
   }
 };
 
+const authorizationforDeleteBlogById=async function (req, res, next) {
+  try {
+    const token = req.headers["x-api-key"];
+    const decodedToken = jwt.verify(token, "uranium");
+
+    req.authorId = decodedToken.authorId;
+    next();
+
+  } catch (error) {
+    res.status(500).send({ status: false, Error: error.message });
+  }
+};
+
 
 
 module.exports.authentication= authentication;
 module.exports.authorization=authorization;
+module.exports.deleteBlog=authorizationforDeleteBlogById;
