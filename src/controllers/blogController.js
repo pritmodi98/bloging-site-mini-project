@@ -1,6 +1,6 @@
+const mongoose = require('mongoose');
 const blogModel = require("../models/blogModel")
 const authorModel = require("../models/authorModel")
-const mongoose = require('mongoose');
 const validator = require("../utils/validator");
 
 const ObjectId= mongoose.Types.ObjectId
@@ -8,14 +8,6 @@ const ObjectId= mongoose.Types.ObjectId
 const createBlog = async function (req, res) {
     try {
         let blog = req.body
-        
-        if (!validator.isValidRequestBody(blog)) {
-            return res.status(400).send({
-              status: false,
-              message: "Invalid request parameter, please provide author Detaills",
-            });
-        }
-      
         const { title, body, authorId, category } = blog;
       
         if (!validator.isValid(title)) {
@@ -46,9 +38,18 @@ const createBlog = async function (req, res) {
         let auth = await authorModel.findById(authorId)
         if (!auth) { return res.status(400).send({ msg: "authorId does not exist" }) }
 
-        let blogCreated = await blogModel.create(blog)
-        return res.status(201).send({ status: true, data: blogCreated })
+        let sameBlog=await blogModel.find(blog)
+        if (sameBlog.length!==0) {
+            return res.status(400).send({status:false,msg:'same blog already exists'})
+        }
 
+        let blogCreated = await blogModel.create(blog)
+        if (blog.isPublished===true) {
+            const updatedData=await blogModel.findOneAndUpdate({_id:blogCreated._id},{publishedAt:new Date()},{new:true})
+            return res.status(201).send({status:true,data:updatedData})
+        }
+        return res.status(201).send({ status: true, data: blogCreated })
+        
 
     }
     catch (err) {
@@ -60,6 +61,7 @@ const createBlog = async function (req, res) {
 
 
 const getBlog=async function(req,res){
+    
     try{
         let filteredData={isDeleted:false,isPublished:true}
         let data=req.query
@@ -83,12 +85,13 @@ const getBlog=async function(req,res){
 
         if(validator.isValid(subCategory)){
             const subArray=subCategory.trim().split(",").map(val=>val.trim())
-            filteredData["subcategory"]={$all:subArray}
+            filteredData["subCategory"]={$all:subArray}
         }
 
         if(validator.isValid(tags)){
             const tagArray=tags.trim().split(",").map(val=>val.trim())
             filteredData["tags"]={$all:tagArray}
+            // console.log(tagArray)
         }
         
         let BlogDetails=await blogModel.find(filteredData)
@@ -96,7 +99,7 @@ const getBlog=async function(req,res){
         {
             return res.status(404).send({status:false,msg:"blogs are not present"})
         }
-        else{
+        {
            return res.status(200).send({status:true,data:BlogDetails})
         }
     }
@@ -118,14 +121,15 @@ const deleteBlog=async function(req,res){
         }
 
        let blog=await blogModel.findOne({_id:blogId,isDeleted:false})
+       if(idFromToken!=blog.authorId){
+        return res.status(401).send({status:false,msg:"Unathorized access"})
+       }
         if(!blog)
         {
             return res.status(404).send({status:false,msg:"blog does not exist"})
         
         }
-        if(idFromToken!=blog.authorId){
-            return res.status(401).send({status:false,msg:"Unathorized access"})
-        }
+        
 
         await blogModel.findOneAndUpdate({_id:blogId},{$set:{isDeleted:true,deletedAt:new Date()}})
         return res.status(200).send({status:true,msg:"blog deleted successfully"})
@@ -220,7 +224,7 @@ const blogDeleteOptions=async function (req,res) {
         }
         if(!(category || authorId || tags || subCategory || isPublished))
         {
-            return res.status(400).send({status:false,msg:"attributes required to dalete blogs"})
+            return res.status(400).send({status:false,msg:"attributes required to delete blogs"})
         }
 
         let blogs=await blogModel.find(filter)
@@ -245,6 +249,8 @@ const blogDeleteOptions=async function (req,res) {
         return res.status(500).send({status:false,msg:err.message})
     }
 
+
+
 }
 
 
@@ -253,3 +259,7 @@ module.exports.getBlog=getBlog;
 module.exports.deleteBlog=deleteBlog;
 module.exports.updateBlog=updateBlog;
 module.exports.blogDeleteOptions=blogDeleteOptions;
+//   const arr=[1,2,3]
+//   const result=arr.map(arup=>arup+10)
+//   console.log(result)
+//   console.log(arr)

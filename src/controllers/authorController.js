@@ -36,7 +36,7 @@ const createAuthor = async function (req, res) {
     if (!validator.isValidTitle(title)) {
       return res.status(400).send({
         status: false,
-        message: `Title should Mr, Mrs, Miss `});
+        message: `Title should be Mr, Mrs, Miss `});
     }
 
     if (!validator.isValid(email)) {
@@ -70,6 +70,7 @@ const createAuthor = async function (req, res) {
       });
     }
 
+
     const newAuthor = await authorModel.create(requestBody);
     return res.status(201).send({
       status: true,
@@ -80,7 +81,7 @@ const createAuthor = async function (req, res) {
   } 
   catch (error) {
     return res.status(500).send({ status: false, Error: error.message });
-    console.log(error);
+    // console.log(error);
   }
 };
 

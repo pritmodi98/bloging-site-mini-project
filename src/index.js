@@ -8,11 +8,19 @@ app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
 
-mongoose.connect("mongodb+srv://shrati:65FywNUvGdDH49SQ@cluster0.tpfb4.mongodb.net/taraP1-DB", {
+mongoose.connect("mongodb+srv://Prit:1XW7ojhyQOrwisLq@pritcluster.dgvbr.mongodb.net/prit-db5", {
     useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected"))
 .catch ( err => console.log(err) )
+// app.use(globalMw)
+// function globalMw(req,res,next) {
+//     // const ip=req.ip
+//     const route=req.originalUrl
+//     // const date =new Date().toLocaleString()
+//     console.log(route)
+//     next()
+// }
 
 app.use('/', router);
 

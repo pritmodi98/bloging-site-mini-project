@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const validator = require("../utils/validator");
 
 const authentication = async function (req, res, next) {
   try {
@@ -27,14 +28,21 @@ const authentication = async function (req, res, next) {
 };
 
 
-const autherization=async function (req, res, next) {
+const authorization=async function (req, res, next) {
   try {
+    // let blog = req.body
+  //   if (!validator.isValidRequestBody(blog)) {
+  //     return res.status(400).send({
+  //       status: false,
+  //       message: "Invalid request parameter, please provide the appropriate Detaills",
+  //     });
+  // }
     let authorId=req.body.authorId;
+
     if(!authorId){
       return res.status(400).send({status:false,msg:"author id required"})
     }
     const token = req.headers["x-api-key"];
-
     const decodedToken = jwt.verify(token, "uranium");
 
     //console.log(decodedToken)
@@ -54,4 +62,4 @@ const autherization=async function (req, res, next) {
 
 
 module.exports.authentication= authentication;
-module.exports.autherization=autherization;
+module.exports.authorization=authorization;
